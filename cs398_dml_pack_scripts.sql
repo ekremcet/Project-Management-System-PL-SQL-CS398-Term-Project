@@ -46,15 +46,15 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     v_department_id IN NUMBER(4))
     IS
     BEGIN
-      INSERT INTO OZU_EMPLOYEES(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,
-                                EMAIL,SALARY,TOTAL_WORK_PERCENTAGE,
-                                MEMBERSHIP_COUNT,DEPARTMENT_ID)
-      VALUES (v_employee_id,v_first_name,v_last_name,v_email,
-              v_salary,v_total_work_percentage,v_membership_count,v_department_id);
-      IF SQL%NOTFOUND THEN
-        RAISE_APPLICATION_ERROR(-20200,'Employee not inserted, Check Values');
-      END IF;
-    END p_t_ozu_employees_insert;
+    INSERT INTO OZU_EMPLOYEES(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,
+                              EMAIL,SALARY,TOTAL_WORK_PERCENTAGE,
+                              MEMBERSHIP_COUNT,DEPARTMENT_ID)
+    VALUES (v_employee_id,v_first_name,v_last_name,v_email,
+            v_salary,v_total_work_percentage,v_membership_count,v_department_id);
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20200,'Employee not inserted, Check Values');
+    END IF;
+  END p_t_ozu_employees_insert;
 
   PROCEDURE p_t_ozu_employees_update_salary(v_employee_id IN NUMBER(6),v_salary IN NUMBER)
   IS
