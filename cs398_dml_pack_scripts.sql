@@ -28,9 +28,44 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   PROCEDURE p_t_ozu_employees_delete_employee(
     v_employee_id IN NUMBER(6)
   );
-  /* procedures for ozu_departments will be implemented */
+  /**** END OF OZU_EMPLOYEES PROCEDURES *******/
+  PROCEDURE p_t_ozu_departments_insert(
+    v_department_id IN NUMBER(4),
+    v_department_name IN VARCHAR2(25),
+    v_head_id IN NUMBER(6)
+  );
+  PROCEDURE p_t_ozu_departments_update_head(
+    v_department_id IN NUMBER(4),
+    v_head_id IN NUMBER(6)
+  );
+  PROCEDURE p_t_ozu_departments_delete_department(
+    v_department_id IN NUMBER(4)
+  );
+  /*********** END OF OZU_DEPARTMENTS PROCEDURES *******/
+  PROCEDURE p_t_ozu_projects_insert(
+    v_project_id IN NUMBER(4),
+    v_leader_id IN NUMBER(6),
+    v_project_status IN VARCHAR2(1),
+    v_project_start_date IN DATE,
+    v_project_end_date IN DATE
+  );
+  PROCEDURE p_t_ozu_projects_update_leader(
+    v_project_id IN NUMBER(4),
+    v_leader_id IN NUMBER(6)
+  );
+  PROCEDURE p_t_ozu_projects_update_project_status(
+    v_project_id IN NUMBER(4),
+    v_project_status IN VARCHAR2(1)
+  );
+  PROCEDURE p_t_ozu_projects_update_project_end_date(
+    v_project_id IN NUMBER(4),
+    v_project_end_date IN DATE
+  );
+  PROCEDURE p_t_ozu_projects_delete_project(
+    v_project_id IN NUMBER(4)
+  );
+  /*********** END OF OZU_PROJECTS PROCEDURES *********/
   /* procedures for ozu_project_teams will be implemented */
-  /* procedures for ozu_projects will be implemented */
   /* procedures for ozu_tasks will be implemented */
 END cs398dml_pack;
 
@@ -44,8 +79,8 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     v_total_work_percentage IN NUMBER,
     v_membership_count IN NUMBER(1),
     v_department_id IN NUMBER(4))
-    IS
-    BEGIN
+  IS
+  BEGIN
     INSERT INTO OZU_EMPLOYEES(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,
                               EMAIL,SALARY,TOTAL_WORK_PERCENTAGE,
                               MEMBERSHIP_COUNT,DEPARTMENT_ID)
@@ -104,14 +139,114 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   BEGIN
     DELETE FROM OZU_EMPLOYEES
     WHERE EMPLOYEE_ID = v_employee_id;
-  IF SQL%NOTFOUND THEN
-    RAISE_APPLICATION_ERROR(-20250,'Employee not deleted, Check Values');
-  END IF;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20250,'Employee not deleted, Check Values');
+    END IF;
   END p_t_ozu_employees_delete_employee;
 
   /******************************************************************************/
   /****************** END OF OZU_EMPLOYEES PROCEDURES ***************************/
   /******************************************************************************/
 
-  
+  PROCEDURE p_t_ozu_departments_insert(
+    v_department_id IN NUMBER(4),
+    v_department_name IN VARCHAR2(25),
+    v_head_id IN NUMBER(6)
+  )
+  IS
+  BEGIN
+    INSERT INTO OZU_DEPARTMENTS(DEPARTMENT_ID,DEPARTMENT_NAME,HEAD_ID)
+    VALUES (v_department_id,v_department_name,v_head_id);
+    IF SQL%NOTFOUND THEN
+     RAISE_APPLICATION_ERROR(-20201,'Department not inserted, Check Values');
+    END IF;
+  END p_t_ozu_departments_insert;
+
+  PROCEDURE p_t_ozu_departments_update_head(v_department_id IN NUMBER(4),
+    v_head_id IN NUMBER(6))
+  IS
+  BEGIN
+    UPDATE OZU_DEPARTMENTS SET HEAD_ID = v_head_id
+    WHERE DEPARTMENT_ID = v_department_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20226,'Department head not updated, Check Values');
+    END IF;
+  END p_t_ozu_departments_update_head;
+
+  PROCEDURE p_t_ozu_departments_delete_department(v_department_id IN NUMBER(4))
+  IS
+  BEGIN
+    DELETE FROM OZU_DEPARTMENTS
+    WHERE DEPARTMENT_ID = v_department_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20251,'Department not deleted, Check Values');
+    END IF;
+  END p_t_ozu_departments_delete_department;
+
+  /******************************************************************************/
+  /****************** END OF OZU_DEPARTMENTS PROCEDURES *************************/
+  /******************************************************************************/
+
+  PROCEDURE p_t_ozu_projects_insert(
+    v_project_id IN NUMBER(4),
+    v_leader_id IN NUMBER(6),
+    v_project_status IN VARCHAR2(1),
+    v_project_start_date IN DATE,
+    v_project_end_date IN DATE
+  )
+  IS
+  BEGIN
+    INSERT INTO OZU_PROJECTS(PROJECT_ID, LEADER_ID, PROJECT_STATUS,
+                             PROJECT_START_DATE, PROJECT_END_DATE)
+    VALUES(v_project_id,v_leader_id,v_project_status,v_project_start_date,v_project_end_date);
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20202,'Project not inserted, Check Values');
+    END IF;
+  END p_t_ozu_projects_insert;
+
+  PROCEDURE p_t_ozu_projects_update_leader(v_project_id IN NUMBER(4),v_leader_id IN NUMBER(6))
+  IS
+  BEGIN
+    UPDATE OZU_PROJECTS SET LEADER_ID = v_leader_id
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20227,'Project Leader not updated, Check Values');
+    END IF;
+  END p_t_ozu_projects_update_leader;
+
+  PROCEDURE p_t_ozu_projects_update_project_status(v_project_id IN NUMBER(4),
+    v_project_status IN VARCHAR2(1))
+  IS
+  BEGIN
+    UPDATE OZU_PROJECTS SET PROJECT_STATUS = v_project_status
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20228,'Project status not updated, Check Values');
+    END IF;
+  END p_t_ozu_projects_update_project_status;
+
+  PROCEDURE p_t_ozu_projects_update_project_end_date(v_project_id IN NUMBER(4),
+    v_project_end_date IN DATE)
+  IS
+  BEGIN
+    UPDATE OZU_PROJECTS SET PROJECT_END_DATE = v_project_end_date
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20229,'Project end date not updated, Check Values');
+    END IF;
+  END p_t_ozu_projects_update_project_end_date;
+
+  PROCEDURE p_t_ozu_projects_delete_project(v_project_id IN NUMBER(4))
+  IS
+  BEGIN
+    DELETE FROM OZU_PROJECTS
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20252,'Project not deleted, Check Values');
+    END IF;
+  END p_t_ozu_projects_delete_project;
+
+  /******************************************************************************/
+  /****************** END OF OZU_PROJECTS PROCEDURES *************************/
+  /******************************************************************************/
 END cs398dml_pack;
