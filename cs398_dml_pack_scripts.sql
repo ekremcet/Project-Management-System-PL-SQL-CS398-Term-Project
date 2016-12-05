@@ -65,8 +65,31 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
     v_project_id IN NUMBER(4)
   );
   /*********** END OF OZU_PROJECTS PROCEDURES *********/
-  /* procedures for ozu_project_teams will be implemented */
-  /* procedures for ozu_tasks will be implemented */
+  PROCEDURE p_t_ozu_project_teams_insert(
+    v_project_id IN NUMBER(4),
+    v_employee_id IN NUMBER(6),
+    v_task_id IN NUMBER(4),
+    v_work_percentage IN NUMBER
+  );
+  PROCEDURE p_t_ozu_project_teams_update_task_of_employee(
+    v_employee_id IN NUMBER(6),
+    v_project_id IN NUMBER(4),
+    v_task_id IN NUMBER(4)
+  );
+  PROCEDURE p_t_ozu_project_teams_update_work_of_employee(
+    v_employee_id IN NUMBER(6),
+    v_task_id IN NUMBER(4),
+    v_work_percentage IN NUMBER
+  );
+  PROCEDURE p_t_ozu_project_teams_delete_employee(
+    v_employee_id IN NUMBER(6),
+    v_project_id IN NUMBER(4)
+  );
+  PROCEDURE p_t_ozu_project_teams_delete_project_team(
+    v_project_id IN NUMBER(4)
+  );
+  /******** END OF OZU_PROJECT_TEAMS PROCEDURES *******/
+
 END cs398dml_pack;
 
 CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
@@ -247,6 +270,70 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   END p_t_ozu_projects_delete_project;
 
   /******************************************************************************/
-  /****************** END OF OZU_PROJECTS PROCEDURES *************************/
+  /****************** END OF OZU_PROJECTS PROCEDURES ****************************/
   /******************************************************************************/
+
+  PROCEDURE p_t_ozu_project_teams_insert(
+    v_project_id IN NUMBER(4),
+    v_employee_id IN NUMBER(6),
+    v_task_id IN NUMBER(4),
+    v_work_percentage IN NUMBER
+  )
+  IS
+  BEGIN
+    INSERT INTO OZU_PROJECT_TEAMS(PROJECT_ID, EMPLOYEE_ID, TASK_ID, WORK_PERCENTAGE)
+    VALUES(v_project_id,v_employee_id,v_task_id,v_work_percentage);
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20203,'Project team not inserted, Check Values');
+    END IF;
+  END p_t_ozu_project_teams_insert;
+
+  PROCEDURE p_t_ozu_project_teams_update_task_of_employee(v_project_id IN NUMBER(4),
+    v_employee_id IN NUMBER(6),v_task_id IN NUMBER(4))
+  IS
+  BEGIN
+    UPDATE OZU_PROJECT_TEAMS SET TASK_ID = v_task_id
+    WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20230,'Employee Task not updated, Check Values');
+    END IF;
+  END p_t_ozu_project_teams_update_task_of_employee;
+
+  PROCEDURE p_t_ozu_project_teams_update_work_of_employee(v_project_id IN NUMBER(4),
+    v_employee_id IN NUMBER(6), v_work_percentage IN NUMBER)
+  IS
+  BEGIN
+    UPDATE OZU_PROJECT_TEAMS SET WORK_PERCENTAGE = v_work_percentage
+    WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20231,'Employee work percentage not updated, Check Values');
+    END IF;
+  END p_t_ozu_project_teams_update_work_of_employee;
+
+  PROCEDURE p_t_ozu_project_teams_delete_employee(v_employee_id IN NUMBER(6),
+    v_project_id IN NUMBER(4))
+  IS
+  BEGIN
+    DELETE FROM OZU_PROJECT_TEAMS
+    WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20253,'Employee in project team not deleted, Check Values');
+    END IF;
+  END p_t_ozu_project_teams_delete_employee;
+
+  PROCEDURE p_t_ozu_project_teams_delete_project_team(v_project_id IN NUMBER(4))
+  IS
+  BEGIN
+    DELETE FROM OZU_PROJECT_TEAMS
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20254,'Project team not deleted, Check Values');
+    END IF;
+  END p_t_ozu_project_teams_delete_project_team;
+
+  /******************************************************************************/
+  /****************** END OF OZU_PROJECT_TEAMS PROCEDURES ***********************/
+  /******************************************************************************/
+
+
 END cs398dml_pack;
