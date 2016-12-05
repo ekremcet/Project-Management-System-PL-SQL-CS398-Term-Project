@@ -1,28 +1,28 @@
 CREATE OR REPLACE PACKAGE cs398dml_pack IS
   PROCEDURE p_t_ozu_employees_insert(
-    v_employee_id IN NUMBER(6),
-    v_first_name IN VARCHAR2(20),
-    v_last_name IN VARCHAR2(25),
-    v_email IN VARCHAR2(45),
-    v_salary IN NUMBER,
+    v_employee_id           IN NUMBER(6),
+    v_first_name            IN VARCHAR2(20),
+    v_last_name             IN VARCHAR2(25),
+    v_email                 IN VARCHAR2(45),
+    v_salary                IN NUMBER,
     v_total_work_percentage IN NUMBER,
-    v_membership_count IN NUMBER(1),
-    v_department_id IN NUMBER(4)
+    v_membership_count      IN NUMBER(1),
+    v_department_id         IN NUMBER(4)
   );
   PROCEDURE p_t_ozu_employees_update_salary(
-     v_employee_id IN NUMBER(6),
-     v_salary IN NUMBER
+    v_employee_id IN NUMBER(6),
+    v_salary      IN NUMBER
   );
   PROCEDURE p_t_ozu_employees_update_total_work_percentage(
-    v_employee_id IN NUMBER(6),
+    v_employee_id           IN NUMBER(6),
     v_total_work_percentage IN NUMBER
   );
   PROCEDURE p_t_ozu_employees_update_membership_count(
-    v_employee_id IN NUMBER(6),
+    v_employee_id      IN NUMBER(6),
     v_membership_count IN NUMBER(1)
   );
   PROCEDURE p_t_ozu_employees_update_department_id(
-    v_employee_id IN NUMBER(6),
+    v_employee_id   IN NUMBER(6),
     v_department_id IN NUMBER(4)
   );
   PROCEDURE p_t_ozu_employees_delete_employee(
@@ -30,35 +30,35 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   );
   /**** END OF OZU_EMPLOYEES PROCEDURES *******/
   PROCEDURE p_t_ozu_departments_insert(
-    v_department_id IN NUMBER(4),
+    v_department_id   IN NUMBER(4),
     v_department_name IN VARCHAR2(25),
-    v_head_id IN NUMBER(6)
+    v_head_id         IN NUMBER(6)
   );
   PROCEDURE p_t_ozu_departments_update_head(
     v_department_id IN NUMBER(4),
-    v_head_id IN NUMBER(6)
+    v_head_id       IN NUMBER(6)
   );
   PROCEDURE p_t_ozu_departments_delete_department(
     v_department_id IN NUMBER(4)
   );
   /*********** END OF OZU_DEPARTMENTS PROCEDURES *******/
   PROCEDURE p_t_ozu_projects_insert(
-    v_project_id IN NUMBER(4),
-    v_leader_id IN NUMBER(6),
-    v_project_status IN VARCHAR2(1),
+    v_project_id         IN NUMBER(4),
+    v_leader_id          IN NUMBER(6),
+    v_project_status     IN VARCHAR2(1),
     v_project_start_date IN DATE,
-    v_project_end_date IN DATE
+    v_project_end_date   IN DATE
   );
   PROCEDURE p_t_ozu_projects_update_leader(
     v_project_id IN NUMBER(4),
-    v_leader_id IN NUMBER(6)
+    v_leader_id  IN NUMBER(6)
   );
   PROCEDURE p_t_ozu_projects_update_project_status(
-    v_project_id IN NUMBER(4),
+    v_project_id     IN NUMBER(4),
     v_project_status IN VARCHAR2(1)
   );
   PROCEDURE p_t_ozu_projects_update_project_end_date(
-    v_project_id IN NUMBER(4),
+    v_project_id       IN NUMBER(4),
     v_project_end_date IN DATE
   );
   PROCEDURE p_t_ozu_projects_delete_project(
@@ -66,42 +66,65 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   );
   /*********** END OF OZU_PROJECTS PROCEDURES *********/
   PROCEDURE p_t_ozu_project_teams_insert(
-    v_project_id IN NUMBER(4),
-    v_employee_id IN NUMBER(6),
-    v_task_id IN NUMBER(4),
+    v_project_id      IN NUMBER(4),
+    v_employee_id     IN NUMBER(6),
+    v_task_id         IN NUMBER(4),
     v_work_percentage IN NUMBER
   );
   PROCEDURE p_t_ozu_project_teams_update_task_of_employee(
     v_employee_id IN NUMBER(6),
-    v_project_id IN NUMBER(4),
-    v_task_id IN NUMBER(4)
+    v_project_id  IN NUMBER(4),
+    v_task_id     IN NUMBER(4)
   );
   PROCEDURE p_t_ozu_project_teams_update_work_of_employee(
-    v_employee_id IN NUMBER(6),
-    v_task_id IN NUMBER(4),
+    v_employee_id     IN NUMBER(6),
+    v_task_id         IN NUMBER(4),
     v_work_percentage IN NUMBER
   );
   PROCEDURE p_t_ozu_project_teams_delete_employee(
     v_employee_id IN NUMBER(6),
-    v_project_id IN NUMBER(4)
+    v_project_id  IN NUMBER(4)
   );
   PROCEDURE p_t_ozu_project_teams_delete_project_team(
     v_project_id IN NUMBER(4)
   );
   /******** END OF OZU_PROJECT_TEAMS PROCEDURES *******/
-
+  PROCEDURE p_t_ozu_tasks_insert(
+    v_task_id         IN NUMBER(4),
+    v_task_status     IN VARCHAR2(1),
+    v_task_start_date IN DATE,
+    v_task_end_date   IN DATE,
+    v_project_id      IN NUMBER(4),
+    v_employee_id     IN NUMBER(6)
+  );
+  PROCEDURE p_t_ozu_tasks_update_task_status(
+    v_task_id     IN NUMBER(4),
+    v_task_status IN VARCHAR2(1)
+  );
+  PROCEDURE p_t_ozu_tasks_update_task_end_date(
+    v_task_id       IN NUMBER(4),
+    v_task_end_date IN VARCHAR2(1)
+  );
+  PROCEDURE p_t_ozu_tasks_update_employee_id(
+    v_task_id     IN NUMBER(4),
+    v_employee_id IN NUMBER(6)
+  );
+  PROCEDURE p_t_ozu_tasks_delete_task(
+    v_task_id IN NUMBER(4)
+  );
 END cs398dml_pack;
 
 CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   PROCEDURE p_t_ozu_employees_insert(
-    v_employee_id IN NUMBER(6),
-    v_first_name IN VARCHAR2(20),
-    v_last_name IN VARCHAR2(25),
-    v_email IN VARCHAR2(45),
-    v_salary IN NUMBER,
+    v_employee_id           IN NUMBER(6),
+    v_first_name            IN VARCHAR2(20),
+    v_last_name             IN VARCHAR2(25),
+    v_email                 IN VARCHAR2(45),
+    v_salary                IN NUMBER,
     v_total_work_percentage IN NUMBER,
-    v_membership_count IN NUMBER(1),
-    v_department_id IN NUMBER(4))
+    v_membership_count      IN NUMBER(1),
+    v_department_id         IN NUMBER(4)
+  )
   IS
   BEGIN
     INSERT INTO OZU_EMPLOYEES(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,
@@ -172,9 +195,9 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   /******************************************************************************/
 
   PROCEDURE p_t_ozu_departments_insert(
-    v_department_id IN NUMBER(4),
+    v_department_id   IN NUMBER(4),
     v_department_name IN VARCHAR2(25),
-    v_head_id IN NUMBER(6)
+    v_head_id         IN NUMBER(6)
   )
   IS
   BEGIN
@@ -211,11 +234,11 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   /******************************************************************************/
 
   PROCEDURE p_t_ozu_projects_insert(
-    v_project_id IN NUMBER(4),
-    v_leader_id IN NUMBER(6),
-    v_project_status IN VARCHAR2(1),
+    v_project_id         IN NUMBER(4),
+    v_leader_id          IN NUMBER(6),
+    v_project_status     IN VARCHAR2(1),
     v_project_start_date IN DATE,
-    v_project_end_date IN DATE
+    v_project_end_date   IN DATE
   )
   IS
   BEGIN
@@ -274,9 +297,9 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   /******************************************************************************/
 
   PROCEDURE p_t_ozu_project_teams_insert(
-    v_project_id IN NUMBER(4),
-    v_employee_id IN NUMBER(6),
-    v_task_id IN NUMBER(4),
+    v_project_id      IN NUMBER(4),
+    v_employee_id     IN NUMBER(6),
+    v_task_id         IN NUMBER(4),
     v_work_percentage IN NUMBER
   )
   IS
@@ -335,5 +358,63 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   /****************** END OF OZU_PROJECT_TEAMS PROCEDURES ***********************/
   /******************************************************************************/
 
+  PROCEDURE p_t_ozu_tasks_insert(
+    v_task_id         IN NUMBER(4),
+    v_task_status     IN VARCHAR2(1),
+    v_task_start_date IN DATE,
+    v_task_end_date   IN DATE,
+    v_project_id      IN NUMBER(4),
+    v_employee_id     IN NUMBER(6)
+  )
+  IS
+  BEGIN
+    INSERT INTO OZU_TASKS(TASK_ID, TASK_STATUS,
+                          TASK_START_DATE, TASK_END_DATE, PROJECT_ID, EMPLOYEE_ID)
+    VALUES(v_task_id,v_task_status,v_task_start_date,v_task_end_date,v_project_id,v_employee_id);
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20204,'Task not inserted, Check Values');
+    END IF;
+  END p_t_ozu_tasks_insert;
 
+  PROCEDURE p_t_ozu_tasks_update_employee_id(v_task_id IN NUMBER(4),
+    v_employee_id IN NUMBER(6))
+  IS
+  BEGIN
+    UPDATE OZU_TASKS SET EMPLOYEE_ID = v_employee_id
+    WHERE TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20232,'Task employee_id not updated, Check Values');
+    END IF;
+  END p_t_ozu_tasks_update_employee_id;
+
+  PROCEDURE p_t_ozu_tasks_update_task_status(v_task_id IN NUMBER(4),
+    v_task_status IN VARCHAR2(1))
+  IS
+  BEGIN
+    UPDATE OZU_TASKS SET TASK_STATUS = v_task_status
+    WHERE TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20233,'Task status not updated, Check Values');
+    END IF;
+  END p_t_ozu_tasks_update_task_status;
+
+  PROCEDURE p_t_ozu_tasks_update_task_end_date(v_task_id IN NUMBER(4),v_task_end_date IN DATE)
+  IS
+  BEGIN
+    UPDATE OZU_TASKS SET TASK_END_DATE = v_task_end_date
+    WHERE TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20234,'Task end date not updated, Check Values');
+    END IF;
+  END p_t_ozu_tasks_update_task_end_date;
+
+  PROCEDURE p_t_ozu_tasks_delete_task(v_task_id IN NUMBER(4))
+  IS
+  BEGIN
+    DELETE FROM OZU_TASKS
+    WHERE TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20255,'Task not deleted, Check Values');
+    END IF;
+  END p_t_ozu_tasks_delete_task;
 END cs398dml_pack;
