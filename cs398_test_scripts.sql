@@ -1,5 +1,1 @@
 select * FROM all_objects WHERE OBJECT_TYPE IN ('PROCEDURE');
-
-BEGIN
-
-END;
