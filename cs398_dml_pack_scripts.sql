@@ -44,7 +44,7 @@ CREATE OR REPLACE PACKAGE cs398dml_pack AS
   /*********** END OF OZU_DEPARTMENTS PROCEDURES *******/
   PROCEDURE p_t_ozu_projects_insert(
     v_project_id         IN NUMBER,
-    v_project_name       IN VARCHAR,
+    v_project_name       IN VARCHAR2,
     v_leader_id          IN NUMBER,
     v_project_status     IN VARCHAR2,
     v_project_start_date IN DATE,
@@ -83,7 +83,7 @@ CREATE OR REPLACE PACKAGE cs398dml_pack AS
   );
   PROCEDURE p_t_ozu_teams_update_work_per(
     v_employee_id     IN NUMBER,
-    v_task_id         IN NUMBER,
+    v_project_id      IN NUMBER,
     v_work_percentage IN NUMBER
   );
   PROCEDURE p_t_ozu_teams_del_emp(
@@ -333,8 +333,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     END IF;
   END p_t_ozu_teams_insert;
 
-  PROCEDURE p_t_ozu_teams_update_task(v_project_id  IN NUMBER,
-                                      v_employee_id IN NUMBER, v_task_id IN NUMBER)
+  PROCEDURE p_t_ozu_teams_update_task(v_employee_id IN NUMBER,v_project_id IN NUMBER,v_task_id IN NUMBER)
   IS
   BEGIN
     UPDATE OZU_PROJECT_TEAMS SET TASK_ID = v_task_id
@@ -344,8 +343,8 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     END IF;
   END p_t_ozu_teams_update_task;
 
-  PROCEDURE p_t_ozu_teams_update_work_per(v_project_id  IN NUMBER,
-                                          v_employee_id IN NUMBER, v_work_percentage IN NUMBER)
+  PROCEDURE p_t_ozu_teams_update_work_per(v_employee_id IN NUMBER, v_project_id IN NUMBER,
+    v_work_percentage IN NUMBER)
   IS
   BEGIN
     UPDATE OZU_PROJECT_TEAMS SET WORK_PERCENTAGE = v_work_percentage
