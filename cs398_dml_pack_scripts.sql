@@ -44,6 +44,7 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   /*********** END OF OZU_DEPARTMENTS PROCEDURES *******/
   PROCEDURE p_t_ozu_projects_insert(
     v_project_id         IN NUMBER(4),
+    v_project_name       IN VARCHAR(25),
     v_leader_id          IN NUMBER(6),
     v_project_status     IN VARCHAR2(1),
     v_project_start_date IN DATE,
@@ -56,6 +57,10 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   PROCEDURE p_t_ozu_projects_update_project_status(
     v_project_id     IN NUMBER(4),
     v_project_status IN VARCHAR2(1)
+  );
+  PROCEDURE p_t_ozu_projects_update_project_start_date(
+    v_project_id         IN NUMBER(4),
+    v_project_start_date IN DATE
   );
   PROCEDURE p_t_ozu_projects_update_project_end_date(
     v_project_id       IN NUMBER(4),
@@ -91,23 +96,28 @@ CREATE OR REPLACE PACKAGE cs398dml_pack IS
   /******** END OF OZU_PROJECT_TEAMS PROCEDURES *******/
   PROCEDURE p_t_ozu_tasks_insert(
     v_task_id         IN NUMBER(4),
+    v_task_name       IN VARCHAR2(25),
     v_task_status     IN VARCHAR2(1),
     v_task_start_date IN DATE,
     v_task_end_date   IN DATE,
     v_project_id      IN NUMBER(4),
-    v_employee_id     IN NUMBER(6)
+    v_coordinator_id  IN NUMBER(6)
   );
   PROCEDURE p_t_ozu_tasks_update_task_status(
     v_task_id     IN NUMBER(4),
     v_task_status IN VARCHAR2(1)
   );
+  PROCEDURE p_t_ozu_tasks_update_task_start_date(
+    v_task_id         IN NUMBER(4),
+    v_task_start_date IN DATE
+  );
   PROCEDURE p_t_ozu_tasks_update_task_end_date(
     v_task_id       IN NUMBER(4),
-    v_task_end_date IN VARCHAR2(1)
+    v_task_end_date IN DATE
   );
-  PROCEDURE p_t_ozu_tasks_update_employee_id(
-    v_task_id     IN NUMBER(4),
-    v_employee_id IN NUMBER(6)
+  PROCEDURE p_t_ozu_tasks_update_coordinator_id(
+    v_task_id        IN NUMBER(4),
+    v_coordinator_id IN NUMBER(6)
   );
   PROCEDURE p_t_ozu_tasks_delete_task(
     v_task_id IN NUMBER(4)
@@ -235,6 +245,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
 
   PROCEDURE p_t_ozu_projects_insert(
     v_project_id         IN NUMBER(4),
+    v_project_name       IN VARCHAR2(25),
     v_leader_id          IN NUMBER(6),
     v_project_status     IN VARCHAR2(1),
     v_project_start_date IN DATE,
@@ -242,9 +253,9 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   )
   IS
   BEGIN
-    INSERT INTO OZU_PROJECTS(PROJECT_ID, LEADER_ID, PROJECT_STATUS,
+    INSERT INTO OZU_PROJECTS(PROJECT_ID, PROJECT_NAME, LEADER_ID, PROJECT_STATUS,
                              PROJECT_START_DATE, PROJECT_END_DATE)
-    VALUES(v_project_id,v_leader_id,v_project_status,v_project_start_date,v_project_end_date);
+    VALUES(v_project_id,v_project_name,v_leader_id,v_project_status,v_project_start_date,v_project_end_date);
     IF SQL%NOTFOUND THEN
       RAISE_APPLICATION_ERROR(-20202,'Project not inserted, Check Values');
     END IF;
@@ -271,6 +282,17 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     END IF;
   END p_t_ozu_projects_update_project_status;
 
+  PROCEDURE p_t_ozu_projects_update_project_start_date(v_project_id IN NUMBER(4),
+    v_project_start_date IN DATE)
+  IS
+  BEGIN
+    UPDATE OZU_PROJECTS SET PROJECT_START_DATE = v_project_start_date
+    WHERE PROJECT_ID = v_project_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20229,'Project end date not updated, Check Values');
+    END IF;
+  END p_t_ozu_projects_update_project_start_date;
+
   PROCEDURE p_t_ozu_projects_update_project_end_date(v_project_id IN NUMBER(4),
     v_project_end_date IN DATE)
   IS
@@ -278,7 +300,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     UPDATE OZU_PROJECTS SET PROJECT_END_DATE = v_project_end_date
     WHERE PROJECT_ID = v_project_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20229,'Project end date not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20230,'Project end date not updated, Check Values');
     END IF;
   END p_t_ozu_projects_update_project_end_date;
 
@@ -318,7 +340,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     UPDATE OZU_PROJECT_TEAMS SET TASK_ID = v_task_id
     WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20230,'Employee Task not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20231,'Employee Task not updated, Check Values');
     END IF;
   END p_t_ozu_project_teams_update_task_of_employee;
 
@@ -329,7 +351,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     UPDATE OZU_PROJECT_TEAMS SET WORK_PERCENTAGE = v_work_percentage
     WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20231,'Employee work percentage not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20232,'Employee work percentage not updated, Check Values');
     END IF;
   END p_t_ozu_project_teams_update_work_of_employee;
 
@@ -364,28 +386,29 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     v_task_start_date IN DATE,
     v_task_end_date   IN DATE,
     v_project_id      IN NUMBER(4),
-    v_employee_id     IN NUMBER(6)
+    v_coordinator_id     IN NUMBER(6)
   )
   IS
   BEGIN
-    INSERT INTO OZU_TASKS(TASK_ID, TASK_STATUS,
+    INSERT INTO OZU_TASKS(TASK_ID, TASK_NAME, TASK_STATUS,
                           TASK_START_DATE, TASK_END_DATE, PROJECT_ID, EMPLOYEE_ID)
-    VALUES(v_task_id,v_task_status,v_task_start_date,v_task_end_date,v_project_id,v_employee_id);
+    VALUES(v_task_id, v_task_name, v_task_status, v_task_start_date, v_task_end_date,
+           v_project_id, v_coordinator_id);
     IF SQL%NOTFOUND THEN
       RAISE_APPLICATION_ERROR(-20204,'Task not inserted, Check Values');
     END IF;
   END p_t_ozu_tasks_insert;
 
-  PROCEDURE p_t_ozu_tasks_update_employee_id(v_task_id IN NUMBER(4),
-    v_employee_id IN NUMBER(6))
+  PROCEDURE p_t_ozu_tasks_update_coordinator_id(v_task_id IN NUMBER(4),
+    v_coordinator_id IN NUMBER(6))
   IS
   BEGIN
-    UPDATE OZU_TASKS SET EMPLOYEE_ID = v_employee_id
+    UPDATE OZU_TASKS SET COORDINATOR_ID = v_coordinator_id
     WHERE TASK_ID = v_task_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20232,'Task employee_id not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20233,'Task coordinator not updated, Check Values');
     END IF;
-  END p_t_ozu_tasks_update_employee_id;
+  END p_t_ozu_tasks_update_coordinator_id;
 
   PROCEDURE p_t_ozu_tasks_update_task_status(v_task_id IN NUMBER(4),
     v_task_status IN VARCHAR2(1))
@@ -394,9 +417,19 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     UPDATE OZU_TASKS SET TASK_STATUS = v_task_status
     WHERE TASK_ID = v_task_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20233,'Task status not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20234,'Task status not updated, Check Values');
     END IF;
   END p_t_ozu_tasks_update_task_status;
+
+  PROCEDURE p_t_ozu_tasks_update_task_start_date(v_task_id IN NUMBER(4), v_task_start_date IN DATE)
+  IS
+  BEGIN
+    UPDATE OZU_TASKS SET TASK_START_DATE = v_task_start_date
+    WHERE TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20235,'Task start date not updated, Check Values');
+    END IF;
+  END p_t_ozu_tasks_update_task_start_date;
 
   PROCEDURE p_t_ozu_tasks_update_task_end_date(v_task_id IN NUMBER(4),v_task_end_date IN DATE)
   IS
@@ -404,7 +437,7 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
     UPDATE OZU_TASKS SET TASK_END_DATE = v_task_end_date
     WHERE TASK_ID = v_task_id;
     IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20234,'Task end date not updated, Check Values');
+      RAISE_APPLICATION_ERROR(-20236,'Task end date not updated, Check Values');
     END IF;
   END p_t_ozu_tasks_update_task_end_date;
 
