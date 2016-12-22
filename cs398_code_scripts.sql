@@ -20,7 +20,7 @@ BEGIN
   END IF;
 END;
 
-CREATE OR REPLACE TRIGGER project_leader_check
+CREATE OR REPLACE TRIGGER project_leader_check_trigger
 BEFORE INSERT OR UPDATE OF LEADER_ID ON OZU_PROJECTS
 FOR EACH ROW
 BEGIN
@@ -31,3 +31,44 @@ BEGIN
   END IF;
 END;
 
+CREATE OR REPLACE TRIGGER member_count_trigger
+BEFORE DELETE OR INSERT OR UPDATE OF EMPLOYEE_ID,PROJECT_ID ON OZU_PROJECT_TEAMS
+FOR EACH ROW
+DECLARE
+  v_old_project_status OZU_PROJECTS.PROJECT_STATUS%TYPE := 'A';
+  v_new_project_status OZU_PROJECTS.PROJECT_STATUS%TYPE;
+  v_member_count OZU_EMPLOYEES.MEMBERSHIP_COUNT%TYPE;
+BEGIN
+  IF NOT DELETING THEN
+    IF UPDATING THEN
+      SELECT PROJECT_STATUS INTO v_old_project_status FROM OZU_PROJECTS
+      WHERE PROJECT_ID = :OLD.PROJECT_ID;
+    END IF;
+
+    SELECT PROJECT_STATUS INTO v_new_project_status FROM OZU_PROJECTS
+    WHERE PROJECT_ID = :NEW.PROJECT_ID;
+    SELECT MEMBERSHIP_COUNT INTO v_member_count FROM OZU_EMPLOYEES
+    WHERE EMPLOYEE_ID = :NEW.EMPLOYEE_ID;
+
+    IF (v_old_project_status IN ('S','P') AND v_new_project_status IN ('C','F')) THEN
+      v_member_count := v_member_count - 1;
+    ELSIF (v_new_project_status IN ('C','F')) THEN
+      v_member_count := v_member_count;
+    ELSE
+      v_member_count := v_member_count + 1;
+    END IF;
+
+    IF(v_member_count > 5 ) THEN
+      RAISE_APPLICATION_ERROR(-20503,'AN EMPLOYEE CANNOT BE MEMBER OF MORE THAN 5 ACTIVE PROJECTS');
+    ELSE
+      UPDATE OZU_EMPLOYEES SET MEMBERSHIP_COUNT = v_member_count WHERE EMPLOYEE_ID = :NEW.EMPLOYEE_ID;
+    END IF;
+    /* If deleting part */
+    /* TODO Delete kısmında projeden mi yoksa tasktan mı silindi onu anlamak lazım düzelt */
+    ELSE
+      SELECT MEMBERSHIP_COUNT INTO v_member_count FROM OZU_EMPLOYEES
+      WHERE EMPLOYEE_ID = :OLD.EMPLOYEE_ID;
+      v_member_count := v_member_count - 1;
+      UPDATE OZU_EMPLOYEES SET MEMBERSHIP_COUNT = v_member_count WHERE EMPLOYEE_ID = :OLD.EMPLOYEE_ID;
+  END IF;
+END;
