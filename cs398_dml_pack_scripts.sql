@@ -116,6 +116,19 @@ CREATE OR REPLACE PACKAGE cs398dml_pack AS
   PROCEDURE p_t_ozu_tasks_delete_task(
     v_task_id IN NUMBER
   );
+  /****** END OF OZU_TASKS PROCEDURES *******/
+  PROCEDURE p_t_ozu_emp_tasks_insert(
+    v_employee_id IN NUMBER,
+    v_task_id     IN NUMBER
+  );
+  PROCEDURE p_t_ozu_emp_tasks_update(
+    v_employee_id IN NUMBER,
+    v_task_id     IN NUMBER
+  );
+  PROCEDURE p_t_ozu_emp_tasks_delete(
+    v_employee_id IN NUMBER,
+    v_task_id     IN NUMBER
+  );
 END cs398dml_pack;
 
 CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
@@ -433,4 +446,38 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
       RAISE_APPLICATION_ERROR(-20255,'Task not deleted, Check Values');
     END IF;
   END p_t_ozu_tasks_delete_task;
+
+  /******************************************************************************/
+  /****************** END OF OZU_TASKS PROCEDURES *******************************/
+  /******************************************************************************/
+
+  PROCEDURE p_t_ozu_emp_tasks_insert(v_employee_id IN NUMBER, v_task_id IN NUMBER)
+  IS
+  BEGIN
+    INSERT INTO OZU_EMP_TASKS(EMPLOYEE_ID, TASK_ID)
+    VALUES (v_employee_id,v_task_id);
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20205,'Employee task not inserted, Check Values');
+    END IF;
+  END p_t_ozu_emp_tasks_insert;
+
+  PROCEDURE p_t_ozu_emp_tasks_update(v_employee_id IN NUMBER, v_task_id IN NUMBER)
+  IS
+  BEGIN
+    UPDATE OZU_EMP_TASKS SET TASK_ID = v_task_id
+    WHERE EMPLOYEE_ID = v_employee_id;
+    IF SQL%NOTFOUND THEN
+       RAISE_APPLICATION_ERROR(-20237,'Employee Task not updated, Check Values');
+    END IF;
+  END p_t_ozu_emp_tasks_update;
+
+  PROCEDURE p_t_ozu_emp_tasks_delete(v_employee_id IN NUMBER, v_task_id IN NUMBER)
+  IS
+  BEGIN
+    DELETE FROM OZU_EMP_TASKS
+    WHERE EMPLOYEE_ID = v_employee_id AND TASK_ID = v_task_id;
+    IF SQL%NOTFOUND THEN
+      RAISE_APPLICATION_ERROR(-20256,'Employee task not deleted, Check Values');
+    END IF;
+  END p_t_ozu_emp_tasks_delete;
 END cs398dml_pack;
