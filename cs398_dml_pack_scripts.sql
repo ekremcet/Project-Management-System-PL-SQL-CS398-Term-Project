@@ -73,13 +73,7 @@ CREATE OR REPLACE PACKAGE cs398dml_pack AS
   PROCEDURE p_t_ozu_teams_insert(
     v_project_id      IN NUMBER,
     v_employee_id     IN NUMBER,
-    v_task_id         IN NUMBER,
     v_work_percentage IN NUMBER
-  );
-  PROCEDURE p_t_ozu_teams_update_task(
-    v_employee_id IN NUMBER,
-    v_project_id  IN NUMBER,
-    v_task_id     IN NUMBER
   );
   PROCEDURE p_t_ozu_teams_update_work_per(
     v_employee_id     IN NUMBER,
@@ -321,27 +315,16 @@ CREATE OR REPLACE PACKAGE BODY cs398dml_pack IS
   PROCEDURE p_t_ozu_teams_insert(
     v_project_id      IN NUMBER,
     v_employee_id     IN NUMBER,
-    v_task_id         IN NUMBER,
     v_work_percentage IN NUMBER
   )
   IS
   BEGIN
-    INSERT INTO OZU_PROJECT_TEAMS(PROJECT_ID, EMPLOYEE_ID, TASK_ID, WORK_PERCENTAGE)
-    VALUES(v_project_id,v_employee_id,v_task_id,v_work_percentage);
+    INSERT INTO OZU_PROJECT_TEAMS(PROJECT_ID, EMPLOYEE_ID, WORK_PERCENTAGE)
+    VALUES(v_project_id,v_employee_id,v_work_percentage);
     IF SQL%NOTFOUND THEN
       RAISE_APPLICATION_ERROR(-20203,'Project team not inserted, Check Values');
     END IF;
   END p_t_ozu_teams_insert;
-
-  PROCEDURE p_t_ozu_teams_update_task(v_employee_id IN NUMBER,v_project_id IN NUMBER,v_task_id IN NUMBER)
-  IS
-  BEGIN
-    UPDATE OZU_PROJECT_TEAMS SET TASK_ID = v_task_id
-    WHERE EMPLOYEE_ID = v_employee_id AND PROJECT_ID = v_project_id;
-    IF SQL%NOTFOUND THEN
-      RAISE_APPLICATION_ERROR(-20231,'Employee Task not updated, Check Values');
-    END IF;
-  END p_t_ozu_teams_update_task;
 
   PROCEDURE p_t_ozu_teams_update_work_per(v_employee_id IN NUMBER, v_project_id IN NUMBER,
     v_work_percentage IN NUMBER)
