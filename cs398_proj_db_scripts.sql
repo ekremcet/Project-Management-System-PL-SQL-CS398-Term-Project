@@ -1,3 +1,7 @@
+/**********************************************************/
+/* EXECUTE UNTIL END OF THE CREATE TABLE STATEMENTS FIRST */
+/**********************************************************/
+
 CREATE TABLE OZU_EMPLOYEES (
   EMPLOYEE_ID           NUMBER(6)    NOT NULL,
   FIRST_NAME            VARCHAR2(20) NOT NULL,
@@ -61,6 +65,10 @@ CREATE TABLE OZU_EMP_TASKS (
   TASK_ID     NUMBER(4) NOT NULL
 );
 
+
+/*****************************/
+/* EXECUTE THIS PART SECOND */
+/****************************/
 /* EMPLOYEE TABLE FK */
 ALTER TABLE OZU_EMPLOYEES
   ADD CONSTRAINT "OZU_EMP_DEPARTMENT_ID_FK"
