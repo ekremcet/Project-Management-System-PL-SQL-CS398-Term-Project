@@ -1,6 +1,9 @@
 ## CS398 Term Project ##
+#### Team Members:
+* Ekrem Çetinkaya [@ekremcet](github.com/ekremcet)
+* Ömer Said Bükte [@obukte](github.com/obukte)
 
-***Introduction***
+### Introduction
 This project is about creating a PL/SQL project to be used in a Project Management software
 
 Further information about business rules can be found in the Report.
